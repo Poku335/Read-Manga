@@ -43,22 +43,10 @@ export default function NewMangaPage() {
         setCoverError(`ไฟล์ใหญ่เกินไป — ${formatBytes(file.size)} (max 5 MB)`);
         return;
       }
-      const url = URL.createObjectURL(file);
-      const img = new window.Image();
-      img.onload = () => {
-        if (img.naturalWidth > 400 || img.naturalHeight > 800) {
-          if (coverPreview) URL.revokeObjectURL(coverPreview);
-          setCoverFile(null);
-          setCoverPreview(null);
-          setCropSrc(url);
-        } else {
-          if (coverPreview) URL.revokeObjectURL(coverPreview);
-          setCoverFile(file);
-          setCoverPreview(url);
-        }
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); setCoverError("ไม่สามารถโหลดรูปได้"); };
-      img.src = url;
+      if (coverPreview) URL.revokeObjectURL(coverPreview);
+      setCoverFile(null);
+      setCoverPreview(null);
+      setCropSrc(URL.createObjectURL(file));
     },
     [coverPreview]
   );
