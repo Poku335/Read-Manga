@@ -68,6 +68,7 @@ export async function PATCH(
   const contentType = formData.get("contentType") as string | null;
   const rating = formData.get("rating") as string | null;
   const coverFile = formData.get("coverImage") as File | null;
+  const removeCoverFlag = formData.get("removeCover") === "true";
 
   let coverImagePath = manga.coverImage;
   if (coverFile instanceof File && coverFile.size > 0) {
@@ -88,6 +89,8 @@ export async function PATCH(
     const ext = coverFile.name.split(".").pop() ?? "jpg";
     const blob = await put(`covers/cover_${mangaId}_${Date.now()}.${ext}`, coverFile, { access: "public" });
     coverImagePath = blob.url;
+  } else if (removeCoverFlag) {
+    coverImagePath = null;
   }
 
   const updated = await prisma.manga.update({

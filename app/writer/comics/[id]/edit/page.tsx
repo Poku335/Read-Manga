@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,8 +39,11 @@ export default function EditMangaPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverRemoved, setCoverRemoved] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -76,11 +79,46 @@ export default function EditMangaPage() {
       .finally(() => setLoading(false));
   }, [params.id, router]);
 
-  function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  const MAX_SIZE = 5 * 1024 * 1024;
+
+  function formatBytes(bytes: number) {
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  const processFile = useCallback((file: File) => {
+    setCoverError(null);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setCoverError("รองรับเฉพาะ JPG, PNG, WebP, GIF");
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      setCoverError(`ไฟล์ใหญ่เกินไป — ${formatBytes(file.size)} (max 5 MB)`);
+      return;
+    }
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
+    setCoverRemoved(false);
+  }, [coverPreview]);
+
+  const removeCover = useCallback(() => {
+    if (coverPreview) URL.revokeObjectURL(coverPreview);
+    setCoverFile(null);
+    setCoverPreview(null);
+    setCoverError(null);
+    setCoverRemoved(true);
+    if (fileRef.current) fileRef.current.value = "";
+  }, [coverPreview]);
+
+  function handleDragEnter(e: React.DragEvent) { e.preventDefault(); e.stopPropagation(); setIsDragging(true); }
+  function handleDragLeave(e: React.DragEvent) { e.preventDefault(); e.stopPropagation(); setIsDragging(false); }
+  function handleDragOver(e: React.DragEvent) { e.preventDefault(); e.stopPropagation(); }
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault(); e.stopPropagation(); setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -95,6 +133,7 @@ export default function EditMangaPage() {
     const fd = new FormData();
     Object.entries(form).forEach(([k, v]) => fd.append(k, v));
     if (coverFile) fd.append("coverImage", coverFile);
+    else if (coverRemoved) fd.append("removeCover", "true");
 
     const res = await fetch(`/api/writer/comics/${params.id}`, { method: "PATCH", body: fd });
     if (res.ok) {
@@ -116,7 +155,7 @@ export default function EditMangaPage() {
 
   if (!manga) return null;
 
-  const displayCover = coverPreview ?? manga.coverImage;
+  const displayCover = coverPreview ?? (coverRemoved ? null : manga.coverImage);
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -136,34 +175,101 @@ export default function EditMangaPage() {
         {/* Cover image */}
         <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
           <label className="block text-sm font-semibold text-gray-700 mb-3">ปกการ์ตูน</label>
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-5">
+            {/* Drop zone — portrait 2:3 */}
             <div
-              className="w-24 h-36 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 flex-shrink-0 relative cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => fileRef.current?.click()}
+              className={[
+                "relative w-44 h-64 rounded-xl border-2 overflow-hidden flex-shrink-0 transition-colors",
+                displayCover ? "border-gray-200 cursor-default" : "border-dashed cursor-pointer",
+                isDragging
+                  ? "border-purple-400 bg-purple-50"
+                  : displayCover
+                  ? "border-gray-200"
+                  : "border-gray-300 hover:border-purple-400 bg-gray-50",
+              ].join(" ")}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={() => !displayCover && fileRef.current?.click()}
             >
               {displayCover ? (
-                <Image src={displayCover} alt="ปก" fill className="object-cover" />
+                <>
+                  <Image src={displayCover} alt="ปก" fill className="object-cover" />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2.5">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+                      className="text-xs bg-white/20 hover:bg-white/35 text-white px-4 py-1.5 rounded-full w-28 transition-colors"
+                    >
+                      เปลี่ยนรูป
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeCover(); }}
+                      className="text-xs bg-red-500/70 hover:bg-red-500 text-white px-4 py-1.5 rounded-full w-28 transition-colors"
+                    >
+                      ลบรูป
+                    </button>
+                  </div>
+                </>
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 gap-1">
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-xs">ปก</span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 select-none text-gray-400">
+                  {isDragging ? (
+                    <>
+                      <svg className="w-9 h-9 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                      </svg>
+                      <span className="text-xs text-purple-500 font-medium">วางที่นี่</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-9 h-9 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-xs text-center leading-relaxed opacity-60 px-3">
+                        คลิกหรือลาก<br />รูปมาวาง
+                      </span>
+                    </>
+                  )}
                 </div>
               )}
             </div>
-            <div>
-              <input ref={fileRef} type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
-              >
-                เปลี่ยนรูปปก
-              </button>
-              <p className="text-xs text-gray-400 mt-2">รองรับ JPG, PNG, WEBP (แนะนำ 2:3)</p>
+
+            {/* Right info panel */}
+            <div className="flex-1 pt-1 space-y-3">
+              {coverFile ? (
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-gray-800 truncate max-w-xs">{coverFile.name}</p>
+                  <p className="text-xs text-gray-500">{formatBytes(coverFile.size)}</p>
+                  <p className="text-xs text-green-600">พร้อมอัปโหลด</p>
+                </div>
+              ) : (
+                <div className="text-xs text-gray-400 leading-relaxed space-y-1">
+                  <p>JPG, PNG, WebP, GIF</p>
+                  <p>สูงสุด 5 MB</p>
+                  <p className="opacity-70">แนะนำ 400 × 600 px (2:3)</p>
+                </div>
+              )}
+              {!displayCover && (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="text-xs text-purple-600 hover:text-purple-700 transition-colors underline-offset-2 hover:underline"
+                >
+                  เลือกไฟล์
+                </button>
+              )}
+              {coverError && <p className="text-xs text-red-500">{coverError}</p>}
             </div>
           </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) processFile(f); }}
+          />
         </div>
 
         {/* Basic info */}
