@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useLayoutEffect, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const CROP_W = 240;
 const CROP_H = 360;
@@ -26,10 +26,10 @@ interface Props {
 export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const cropFrameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number } | null>(null);
 
   // Refs hold latest values so non-reactive native handlers can read them correctly
-  const containerWRef = useRef(380);
   const zoomRef = useRef(1);
   const offsetRef = useRef({ x: 0, y: 0 });
   const natRef = useRef({ w: 0, h: 0 });
@@ -44,11 +44,6 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
   zoomRef.current = zoom;
   offsetRef.current = offset;
   natRef.current = nat;
-
-  // Measure container width before paint so crop math is correct on first image load
-  useLayoutEffect(() => {
-    if (containerRef.current) containerWRef.current = containerRef.current.offsetWidth;
-  }, []);
 
   // Non-passive wheel listener — React's onWheel is passive by default and
   // cannot call preventDefault(), causing the page to scroll while zooming
@@ -106,19 +101,26 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
 
   function handleConfirm() {
     const img = imgRef.current;
-    if (!img || nat.w === 0) return;
+    const cropEl = cropFrameRef.current;
+    if (!img || !cropEl || nat.w === 0) return;
     setConfirming(true);
 
-    const cw = containerWRef.current;
-    const imgL = cw / 2 + offset.x - (nat.w * zoom) / 2;
-    const imgT = CONTAINER_H / 2 + offset.y - (nat.h * zoom) / 2;
-    const cropL = cw / 2 - CROP_W / 2;
-    const cropT = CONTAINER_H / 2 - CROP_H / 2;
+    // Read actual rendered positions from the DOM — immune to any state/ref drift
+    const imgRect = img.getBoundingClientRect();
+    const cropRect = cropEl.getBoundingClientRect();
 
-    const srcX = (cropL - imgL) / zoom;
-    const srcY = (cropT - imgT) / zoom;
-    const srcW = CROP_W / zoom;
-    const srcH = CROP_H / zoom;
+    // How many screen pixels from image top-left to crop frame top-left
+    const dxLeft = cropRect.left - imgRect.left;
+    const dyTop = cropRect.top - imgRect.top;
+
+    // Scale factor: screen pixels → natural image pixels
+    const scaleX = nat.w / imgRect.width;
+    const scaleY = nat.h / imgRect.height;
+
+    const srcX = dxLeft * scaleX;
+    const srcY = dyTop * scaleY;
+    const srcW = cropRect.width * scaleX;
+    const srcH = cropRect.height * scaleY;
 
     const canvas = document.createElement("canvas");
     canvas.width = OUT_W;
@@ -131,10 +133,9 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
     }, "image/jpeg", 0.92);
   }
 
-  const cw = containerWRef.current;
   const iw = nat.w * zoom;
   const ih = nat.h * zoom;
-  const imgLeft = cw / 2 + offset.x - iw / 2;
+  const imgLeft = (containerRef.current?.offsetWidth ?? 380) / 2 + offset.x - iw / 2;
   const imgTop = CONTAINER_H / 2 + offset.y - ih / 2;
   const loaded = nat.w > 0;
 
@@ -203,6 +204,7 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
           {/* Dark overlay with crop window hole (outline trick) + corner L-marks */}
           {loaded && (
             <div
+              ref={cropFrameRef}
               className="pointer-events-none absolute"
               style={{
                 left: "50%",
