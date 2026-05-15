@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import CoverCropModal from "@/components/CoverCropModal";
 
 const GENRES = ["Action", "Fantasy", "Romance", "Sci-Fi", "Comedy", "Horror", "Drama", "Slice of Life"];
 const STATUSES = ["Ongoing", "Completed", "Hiatus"];
@@ -25,6 +26,7 @@ export default function NewMangaPage() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverError, setCoverError] = useState<string | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +43,37 @@ export default function NewMangaPage() {
         setCoverError(`ไฟล์ใหญ่เกินไป — ${formatBytes(file.size)} (max 5 MB)`);
         return;
       }
-      if (coverPreview) URL.revokeObjectURL(coverPreview);
-      setCoverFile(file);
-      setCoverPreview(URL.createObjectURL(file));
+      const url = URL.createObjectURL(file);
+      const img = new window.Image();
+      img.onload = () => {
+        if (img.naturalWidth > 400 || img.naturalHeight > 800) {
+          if (coverPreview) URL.revokeObjectURL(coverPreview);
+          setCoverFile(null);
+          setCoverPreview(null);
+          setCropSrc(url);
+        } else {
+          if (coverPreview) URL.revokeObjectURL(coverPreview);
+          setCoverFile(file);
+          setCoverPreview(url);
+        }
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); setCoverError("ไม่สามารถโหลดรูปได้"); };
+      img.src = url;
     },
     [coverPreview]
   );
+
+  function handleCropConfirm(file: File, previewUrl: string) {
+    setCoverFile(file);
+    setCoverPreview(previewUrl);
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }
 
   const removeCover = useCallback(() => {
     if (coverPreview) URL.revokeObjectURL(coverPreview);
@@ -304,6 +331,10 @@ export default function NewMangaPage() {
           </button>
         </div>
       </form>
+
+      {cropSrc && (
+        <CoverCropModal src={cropSrc} onConfirm={handleCropConfirm} onCancel={handleCropCancel} />
+      )}
     </div>
   );
 }
