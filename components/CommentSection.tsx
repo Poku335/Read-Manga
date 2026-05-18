@@ -60,26 +60,11 @@ interface Props {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-const THAI_MONTHS = [
-  "มกราคม",
-  "กุมภาพันธ์",
-  "มีนาคม",
-  "เมษายน",
-  "พฤษภาคม",
-  "มิถุนายน",
-  "กรกฎาคม",
-  "สิงหาคม",
-  "กันยายน",
-  "ตุลาคม",
-  "พฤศจิกายน",
-  "ธันวาคม",
-];
-
 function formatThaiDate(iso: string): string {
   const d = new Date(iso);
-  const day = d.getDate();
-  const month = THAI_MONTHS[d.getMonth()];
-  const year = d.getFullYear() + 543;
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
   return `${day}/${month}/${year}`;
 }
 
@@ -99,7 +84,7 @@ function Avatar({ comment, size = 8 }: { comment: Comment; size?: number }) {
   const sizeClass = size === 6 ? "w-6 h-6 text-xs" : "w-8 h-8 text-sm";
   return (
     <div
-      className={`${sizeClass} rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold flex-shrink-0 overflow-hidden`}
+      className={`${sizeClass} rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold flex-shrink-0 overflow-hidden ring-2 ring-white`}
     >
       {!comment.isGuest && comment.user?.image ? (
         <Image
@@ -284,7 +269,7 @@ export default function CommentSection({
               placeholder="แสดงความคิดเห็น..."
               rows={5}
               maxLength={1000}
-              className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 resize-none transition-colors"
+              className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/70 resize-none transition-colors"
             />
           </div>
 
@@ -303,7 +288,7 @@ export default function CommentSection({
                     sessionStorage.setItem("guest_name", e.target.value);
                   }}
                   maxLength={50}
-                  className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-white/40 transition-colors"
+                  className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-white/70 transition-colors"
                 />
               </div>
               <div className="space-y-1">
@@ -461,7 +446,7 @@ export default function CommentSection({
                           }}
                           maxLength={50}
                           placeholder="ชื่อของคุณ"
-                          className="flex-1 bg-surface border border-border rounded-md px-2 py-1 text-xs text-text outline-none focus:border-white/40 transition-colors"
+                          className="flex-1 bg-surface border border-border rounded-md px-2 py-1 text-xs text-text outline-none focus:border-white/70 transition-colors"
                         />
                       </div>
                     )}
@@ -472,7 +457,7 @@ export default function CommentSection({
                         placeholder={`ตอบกลับ ${getDisplayName(c)}...`}
                         rows={2}
                         maxLength={1000}
-                        className="flex-1 bg-surface border border-border rounded-md px-2 py-1.5 text-xs text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors resize-none"
+                        className="flex-1 bg-surface border border-border rounded-md px-2 py-1.5 text-xs text-text placeholder:text-muted outline-none focus:border-white/70 transition-colors resize-none"
                         autoFocus
                       />
                       <div className="flex flex-col gap-1 self-end">

@@ -23,13 +23,15 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
   const containerRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
 
-  async function openDropdown() {
-    if (open) { setOpen(false); return; }
-    setOpen(true);
-    if (chapters === null) {
-      const res = await fetch(`/api/manga/${mangaId}/chapters`);
-      setChapters(await res.json());
-    }
+  useEffect(() => {
+    fetch(`/api/manga/${mangaId}/chapters`)
+      .then((r) => r.json())
+      .then(setChapters)
+      .catch(() => setChapters([]));
+  }, [mangaId]);
+
+  function openDropdown() {
+    setOpen((v) => !v);
   }
 
   useEffect(() => {
@@ -130,7 +132,7 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
         ) : (
           <button
             onClick={() => router.push(`/manga/${mangaId}`)}
-            className="flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-semibold text-muted hover:text-text transition-colors"
+            className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-accent-hover transition-colors"
           >
             รายการตอน
           </button>

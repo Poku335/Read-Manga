@@ -162,14 +162,19 @@ function SectionHeader({ title, href }: { title: string; href?: string }) {
   );
 }
 
-const GENRES = ["All", "Action", "Fantasy", "Romance", "Sci-Fi", "Comedy", "Horror", "Drama", "Slice of Life"];
-const GENRE_LABELS: Record<string, string> = { All: "ทุกหมวด" };
+const GENRES = ["All", "การ์ตูน", "Action", "Fantasy", "Romance", "Sci-Fi", "Comedy", "Horror", "Drama", "Slice of Life", "Adventure", "Mystery", "Thriller", "Historical"];
+const GENRE_LABELS: Record<string, string> = { All: "ทั้งหมด", "การ์ตูน": "การ์ตูน" };
 const STATUSES = ["All", "Ongoing", "Completed", "Hiatus"];
 const STATUS_FILTER_LABELS: Record<string, string> = { All: "ทุกสถานะ", Ongoing: "กำลังดำเนิน", Completed: "จบแล้ว", Hiatus: "หยุดชั่วคราว" };
 
 const MANGA_INCLUDE = {
   _count: { select: { chapters: true } },
   chapters: { orderBy: { chapterNumber: "desc" as const }, take: 2, select: { id: true, chapterNumber: true, createdAt: true } },
+} as const;
+
+const HERO_INCLUDE = {
+  _count: { select: { chapters: true } },
+  chapters: { orderBy: { chapterNumber: "asc" as const }, take: 1, select: { id: true, chapterNumber: true } },
 } as const;
 
 // Cast helper: Prisma's inferred type from MANGA_INCLUDE does not carry description
@@ -182,10 +187,11 @@ export default async function HomePage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
-  const genre = sp.genre && sp.genre !== "All" ? sp.genre : undefined;
+  const rawCat = sp.genre;
+  const genre = rawCat && !["All", "การ์ตูน"].includes(rawCat) ? rawCat : undefined;
   const status = sp.status && sp.status !== "All" ? sp.status : undefined;
   const q = sp.q?.trim() || undefined;
-  const contentType = sp.type === "novel" || sp.type === "comics" ? sp.type : undefined;
+  const contentType = rawCat === "การ์ตูน" ? "comics" : sp.type === "comics" ? sp.type : undefined;
   const isFiltered = genre || status || q || contentType;
 
   if (isFiltered) {
@@ -201,7 +207,6 @@ export default async function HomePage({
     });
 
     const pageTitle =
-      contentType === "novel" ? "นิยาย" :
       contentType === "comics" ? "การ์ตูน / มังงะ" :
       q ? `ค้นหา: "${q}"` :
       "ผลการค้นหา";
@@ -210,7 +215,6 @@ export default async function HomePage({
       <div>
         <div className="app-panel rounded-lg p-4 mb-6">
           <form method="GET" className="flex flex-wrap gap-2">
-            {contentType && <input type="hidden" name="type" value={contentType} />}
             <input
               name="q"
               defaultValue={sp.q || ""}
@@ -275,7 +279,7 @@ export default async function HomePage({
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  const [popularManga, latestManga, totalCount, allTimeRaw, weeklyRanking, monthlyRanking, readHistoryRows] =
+  const [popularManga, latestManga, totalCount, allTimeRaw, weeklyRanking, monthlyRanking, readHistoryRows, heroConfig] =
     await Promise.all([
       prisma.manga.findMany({ include: MANGA_INCLUDE, orderBy: { viewCount: "desc" }, take: 8 }),
       prisma.manga.findMany({ include: MANGA_INCLUDE, orderBy: { createdAt: "desc" }, take: 8 }),
@@ -290,11 +294,37 @@ export default async function HomePage({
       userId
         ? prisma.readingHistory.findMany({ where: { userId }, select: { chapterId: true } })
         : Promise.resolve([]),
+      prisma.siteConfig.findUnique({ where: { key: "hero_manga_ids" } }),
     ]);
 
   const readChapterIds = new Set(readHistoryRows.map((h) => h.chapterId));
-
   const allTimeRanking = allTimeRaw.map((m) => ({ ...m, count: m.viewCount }));
+
+  const heroIds = heroConfig?.value ? heroConfig.value.split(",").map(Number).filter(Boolean) : [];
+  const heroSourceIds = heroIds.length > 0 ? heroIds : popularManga.slice(0, 4).map((m) => m.id);
+  const heroRaw = await prisma.manga.findMany({
+    where: { id: { in: heroSourceIds } },
+    include: HERO_INCLUDE,
+  });
+
+  const heroImageConfigs = heroSourceIds.length > 0
+    ? await prisma.siteConfig.findMany({
+        where: { key: { in: heroSourceIds.map((id) => `hero_image_${id}`) } },
+      })
+    : [];
+  const heroImageMap: Record<number, string> = {};
+  for (const c of heroImageConfigs) {
+    const id = parseInt(c.key.replace("hero_image_", ""));
+    if (!isNaN(id)) heroImageMap[id] = c.value;
+  }
+
+  const heroMangas = heroSourceIds
+    .map((id) => {
+      const m = heroRaw.find((m) => m.id === id);
+      if (!m) return undefined;
+      return { ...m, heroImage: heroImageMap[id] ?? null };
+    })
+    .filter(Boolean);
 
   if (totalCount === 0) {
     return (
@@ -306,7 +336,6 @@ export default async function HomePage({
     );
   }
 
-  const heroMangas = popularManga.slice(0, 4) as MangaWithMeta[];
 
   return (
     <div className="space-y-10 sm:space-y-12">
