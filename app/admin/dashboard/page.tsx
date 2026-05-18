@@ -66,34 +66,32 @@ export default function AdminDashboard() {
   const user = session?.user as (NonNullable<typeof session>["user"] & SessionUser) | undefined;
   const isAdmin = status === "authenticated" && user?.role === "ADMIN";
 
-  const loadTab = useCallback((t: Tab) => {
+  const loadAll = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
-    const endpoint = t === "manga" ? "/api/manga" : `/api/admin/${t === "revenue" ? "revenue" : "users"}`;
-    fetch(endpoint)
-      .then(async (r) => {
-        if (!r.ok) {
-          const body = await r.json().catch(() => ({}));
-          throw new Error(body.error || `HTTP ${r.status}`);
-        }
-        return r.json();
-      })
-      .then((json) => {
-        if (t === "manga") setMangas(json as MangaData[]);
-        else if (t === "users") {
-          // Users endpoint now returns paginated { data, total, page, limit }
-          const usersData = json as { data?: AdminUser[] } | AdminUser[];
-          setUsers(Array.isArray(usersData) ? usersData : (usersData.data ?? []));
-        } else setRevenue(json as RevenueData);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        setFetchError(err.message || "ไม่สามารถโหลดข้อมูลได้");
-      })
-      .finally(() => setLoading(false));
+    try {
+      const [mangaRes, usersRes, revenueRes] = await Promise.all([
+        fetch("/api/manga"),
+        fetch("/api/admin/users"),
+        fetch("/api/admin/revenue"),
+      ]);
+      const [mangaJson, usersJson, revenueJson] = await Promise.all([
+        mangaRes.json(),
+        usersRes.json(),
+        revenueRes.json(),
+      ]);
+      setMangas(mangaJson as MangaData[]);
+      const usersData = usersJson as { data?: AdminUser[] } | AdminUser[];
+      setUsers(Array.isArray(usersData) ? usersData : (usersData.data ?? []));
+      setRevenue(revenueJson as RevenueData);
+    } catch (err) {
+      setFetchError(err instanceof Error ? err.message : "ไม่สามารถโหลดข้อมูลได้");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => { if (isAdmin) loadTab(tab); }, [tab, isAdmin, loadTab]);
+  useEffect(() => { if (isAdmin) loadAll(); }, [isAdmin, loadAll]);
 
   if (status === "loading") return <div className="text-center py-12 text-muted">Loading...</div>;
   if (status === "unauthenticated") { router.push("/auth/signin"); return null; }
@@ -106,7 +104,7 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       setUpdateRoleModal(null);
-      loadTab("users");
+      loadAll("users");
       toast("เปลี่ยน role สำเร็จ", "success");
     } else {
       toast("เกิดข้อผิดพลาด ไม่สามารถเปลี่ยน role ได้", "error");
@@ -124,7 +122,7 @@ export default function AdminDashboard() {
     if (res.ok) {
       setCoinsModal(null);
       setCoinsAmount("");
-      loadTab("users");
+      loadAll("users");
       toast("อัปเดต coins สำเร็จ", "success");
     } else {
       toast("เกิดข้อผิดพลาด ไม่สามารถอัปเดต coins ได้", "error");
@@ -141,7 +139,7 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       setEditModal(null);
-      loadTab("manga");
+      loadAll("manga");
       toast("บันทึกการ์ตูนสำเร็จ", "success");
     } else {
       toast("บันทึกไม่สำเร็จ กรุณาลองใหม่", "error");
@@ -193,30 +191,9 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold text-text">Admin Dashboard</h1>
           <p className="text-muted text-sm mt-0.5">จัดการระบบทั้งหมด</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/admin/dashboard/topup" className="bg-bg border border-border text-muted text-sm px-4 py-2 rounded-lg hover:text-text transition-colors flex items-center gap-1.5">
-            <span>🪙</span>
-            เติมเหรียญ
-          </Link>
-          <Link href="/admin/dashboard/settings" className="bg-bg border border-border text-muted text-sm px-4 py-2 rounded-lg hover:text-text transition-colors flex items-center gap-1.5">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path strokeLinecap="round" strokeLinejoin="round" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Settings
-          </Link>
-          <Link href="/admin/dashboard/logs" className="bg-bg border border-border text-muted text-sm px-4 py-2 rounded-lg hover:text-text transition-colors flex items-center gap-1.5">
-            <span>📋</span>
-            Logs
-          </Link>
-          <Link href="/admin/dashboard/report" className="bg-bg border border-border text-muted text-sm px-4 py-2 rounded-lg hover:text-text transition-colors flex items-center gap-1.5">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z"/></svg>
-            Site Health
-          </Link>
-          <Link href="/manga/new" className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors">
-            + เพิ่มการ์ตูน
-          </Link>
-          <Link href="/" className="bg-bg border border-border text-muted text-sm px-4 py-2 rounded-lg hover:text-text transition-colors">
-            กลับเว็บไซต์
-          </Link>
-        </div>
+        <Link href="/manga/new" className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors">
+          + เพิ่มการ์ตูน
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -249,7 +226,7 @@ export default function AdminDashboard() {
           <p className="text-red-400 font-semibold mb-1">ไม่สามารถโหลดข้อมูลได้</p>
           <p className="text-red-400/70 text-sm mb-4">{fetchError}</p>
           <button
-            onClick={() => loadTab(tab)}
+            onClick={() => loadAll(tab)}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors"
           >
             ลองใหม่
@@ -263,14 +240,66 @@ export default function AdminDashboard() {
           {mangas.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               {[
-                { label: "การ์ตูนทั้งหมด", value: mangas.length, color: "text-accent" },
-                { label: "ตอนรวม", value: mangas.reduce((s, m) => s + (m._count.chapters ?? 0), 0), color: "text-text" },
-                { label: "ยอดวิวรวม", value: totalMangaViews.toLocaleString(), color: "text-blue-400" },
-                { label: "กำลังดำเนิน", value: mangas.filter((m) => m.status === "Ongoing").length, color: "text-green-400" },
+                {
+                  label: "การ์ตูนทั้งหมด",
+                  value: mangas.length,
+                  color: "text-accent",
+                  iconBg: "bg-accent/20",
+                  icon: (
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "ตอนรวม",
+                  value: mangas.reduce((s, m) => s + (m._count.chapters ?? 0), 0),
+                  color: "text-text",
+                  iconBg: "bg-white/10",
+                  icon: (
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-text">
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <line x1="3" y1="6" x2="3.01" y2="6" />
+                      <line x1="3" y1="12" x2="3.01" y2="12" />
+                      <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "ยอดวิวรวม",
+                  value: totalMangaViews.toLocaleString(),
+                  color: "text-blue-400",
+                  iconBg: "bg-blue-400/20",
+                  icon: (
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "กำลังดำเนิน",
+                  value: mangas.filter((m) => m.status === "Ongoing").length,
+                  color: "text-green-400",
+                  iconBg: "bg-green-400/20",
+                  icon: (
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  ),
+                },
               ].map((s) => (
-                <div key={s.label} className="bg-surface border border-border rounded-xl p-4">
-                  <p className="text-xs text-muted mb-1">{s.label}</p>
-                  <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                <div key={s.label} className="bg-surface border border-border rounded-xl p-5 flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${s.iconBg}`}>
+                    {s.icon}
+                  </div>
+                  <div>
+                    <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                    <p className="text-xs text-muted mt-0.5">{s.label}</p>
+                  </div>
                 </div>
               ))}
             </div>

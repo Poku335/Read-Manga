@@ -14,7 +14,6 @@ interface SessionUser {
 const CATEGORY_LINKS = [
   { href: "/", label: "ทั้งหมด" },
   { href: "/?type=comics", label: "การ์ตูน" },
-  { href: "/?type=novel", label: "นิยาย" },
   { href: "/?genre=Action", label: "Action" },
   { href: "/?genre=Fantasy", label: "Fantasy" },
   { href: "/?genre=Romance", label: "Romance" },
@@ -125,7 +124,7 @@ export default function Navbar() {
                   setSearchQuery("");
                 }
               }}
-              placeholder="ค้นหามังงะ การ์ตูน นิยาย..."
+              placeholder="ค้นหามังงะ การ์ตูน..."
               className="flex-1 bg-bg border border-border rounded-full px-4 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors transition-colors"
             />
             <button

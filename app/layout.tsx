@@ -46,8 +46,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: { default: "MangBoh", template: "%s | MangBoh" },
-  description: "อ่านมังงะ การ์ตูน และนิยายออนไลน์ฟรี อัปเดตทุกวัน",
-  keywords: ["มังงะ", "การ์ตูน", "นิยาย", "อ่านออนไลน์", "manga", "webtoon"],
+  description: "อ่านมังงะ การ์ตูน ออนไลน์ฟรี อัปเดตทุกวัน",
+  keywords: ["มังงะ", "การ์ตูน", "อ่านออนไลน์", "manga", "webtoon"],
   openGraph: {
     siteName: "MangBoh",
     type: "website",

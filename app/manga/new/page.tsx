@@ -4,8 +4,9 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import CoverCropModal from "@/components/CoverCropModal";
+import { useToast } from "@/components/Toast";
 
-const GENRES = ["Action", "Fantasy", "Romance", "Sci-Fi", "Comedy", "Horror", "Drama", "Slice of Life"];
+const GENRES = ["Action", "Fantasy", "Romance", "Sci-Fi", "Comedy", "Horror", "Drama", "Slice of Life", "Adventure", "Mystery", "Thriller", "Historical"];
 const STATUSES = ["Ongoing", "Completed", "Hiatus"];
 const MANGA_TYPES = [
   { value: "MANHWA", label: "Manhwa" },
@@ -23,6 +24,7 @@ function formatBytes(bytes: number) {
 
 export default function NewMangaPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverError, setCoverError] = useState<string | null>(null);
@@ -106,6 +108,7 @@ export default function NewMangaPage() {
       const res = await fetch("/api/manga", { method: "POST", body: data });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed to create manga");
+      toast("สร้างมังงะสำเร็จ", "success");
       router.push(`/admin/dashboard/manga/${json.id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unknown error");

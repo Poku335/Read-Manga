@@ -68,12 +68,6 @@ export default async function ChapterReaderPage({
   const user = getSessionUser(session);
   const userId = user?.id ? parseInt(user.id) : null;
 
-  if (chapter.isHidden) {
-    const isAdmin = user?.role === "ADMIN";
-    const isAuthor = userId !== null && chapter.manga.author?.id === userId;
-    if (!isAdmin && !isAuthor) notFound();
-  }
-
   if (chapter.isPaid) {
     const purchase = userId
       ? await prisma.purchase.findUnique({
@@ -184,35 +178,6 @@ export default async function ChapterReaderPage({
                     priority={page.pageNumber <= 3}
                   />
                 ))}
-
-                {/* Chapter end banner */}
-                <div className="mt-12 w-full rounded-xl border border-border bg-surface px-6 py-8 text-center shadow-lg">
-                  <p className="text-lg font-black text-text">
-                    จบตอนที่ {chapter.chapterNumber} แล้ว!
-                  </p>
-                  <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                    {prevChapter ? (
-                      <Link
-                        href={`/manga/${mangaId}/chapter/${prevChapter.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border px-5 py-2.5 text-sm font-semibold text-text transition-colors hover:border-accent hover:text-accent"
-                      >
-                        &larr; ตอนก่อน
-                      </Link>
-                    ) : null}
-                    {nextChapter ? (
-                      <Link
-                        href={`/manga/${mangaId}/chapter/${nextChapter.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-accent-hover"
-                      >
-                        ตอนถัดไป &rarr;
-                      </Link>
-                    ) : (
-                      <span className="text-sm font-medium text-muted">
-                        ติดตามตอนใหม่ได้เร็วๆ นี้
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
           </div>

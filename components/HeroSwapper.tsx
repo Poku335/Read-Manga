@@ -9,6 +9,7 @@ interface HeroManga {
   title: string;
   description: string;
   coverImage: string | null;
+  heroImage?: string | null;
   viewCount: number;
   _count: { chapters: number };
   chapters: { id: number; chapterNumber: number }[];
@@ -68,8 +69,8 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         className="absolute inset-0 transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
       >
-        {manga.coverImage ? (
-          <Image src={manga.coverImage} alt="" fill sizes="100vw" className="object-cover opacity-25" priority />
+        {(manga.heroImage ?? manga.coverImage) ? (
+          <Image src={(manga.heroImage ?? manga.coverImage)!} alt="" fill sizes="100vw" className="object-cover opacity-25" priority />
         ) : (
           <div className="absolute inset-0 bg-card" />
         )}
@@ -107,10 +108,10 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 p-5 sm:p-8 items-start sm:items-end w-full max-w-5xl transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
       >
-        {manga.coverImage && (
+        {(manga.heroImage ?? manga.coverImage) && (
           <div className="flex-shrink-0 w-32 sm:w-44 aspect-[2/3] rounded-lg overflow-hidden border border-border shadow-xl">
             <Image
-              src={manga.coverImage}
+              src={(manga.heroImage ?? manga.coverImage)!}
               alt={manga.title}
               width={208}
               height={312}
@@ -136,8 +137,12 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
             >
               รายละเอียด
             </Link>
-            <span className="text-white/50 text-sm ml-1">
-              {formatCount(manga.viewCount)} ครั้ง · {manga._count.chapters} ตอน
+            <span className="flex items-center gap-1.5 text-white/50 text-sm ml-1">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {formatCount(manga.viewCount)} · {manga._count.chapters} ตอน
             </span>
           </div>
         </div>

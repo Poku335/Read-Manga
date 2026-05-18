@@ -17,8 +17,11 @@ export default function NewChapterPage() {
     const form = e.currentTarget;
     const data = {
       mangaId: parseInt(params.id),
-      chapterNumber: parseFloat((form.elements.namedItem("chapterNumber") as HTMLInputElement).value),
-      title: (form.elements.namedItem("title") as HTMLInputElement).value || null,
+      chapterNumber: parseFloat(
+        (form.elements.namedItem("chapterNumber") as HTMLInputElement).value,
+      ),
+      title:
+        (form.elements.namedItem("title") as HTMLInputElement).value || null,
     };
 
     try {
@@ -51,15 +54,17 @@ export default function NewChapterPage() {
             step="0.1"
             min="0"
             required
-            placeholder="e.g. 1 or 1.5"
+            placeholder="ตอนที่"
             className="w-full bg-surface border border-border rounded px-3 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1.5 text-muted">Chapter Title (optional)</label>
+          <label className="block text-sm font-medium mb-1.5 text-muted">
+            Chapter Title (optional)
+          </label>
           <input
             name="title"
-            placeholder="e.g. The Beginning"
+            placeholder="ชื่อตอน"
             className="w-full bg-surface border border-border rounded px-3 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors"
           />
         </div>

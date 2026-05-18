@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { put } from "@vercel/blob";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
 
@@ -57,13 +58,17 @@ export async function POST(req: NextRequest) {
     }
 
     const ext = file.name.split(".").pop() || "png";
-    const filename = `pages/ch${chapterId}_p${pageNumber}_${Date.now()}.${ext}`;
-    const blob = await put(filename, file, { access: "public" });
+    const filename = `ch${chapterId}_p${pageNumber}_${Date.now()}.${ext}`;
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(path.join(uploadDir, filename), buffer);
+    const imagePath = `/uploads/${filename}`;
 
     const page = await prisma.page.upsert({
       where: { chapterId_pageNumber: { chapterId, pageNumber } },
-      update: { imagePath: blob.url },
-      create: { chapterId, pageNumber, imagePath: blob.url },
+      update: { imagePath },
+      create: { chapterId, pageNumber, imagePath },
     });
 
     return NextResponse.json(page, { status: 201 });

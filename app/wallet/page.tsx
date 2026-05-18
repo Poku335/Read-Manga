@@ -21,13 +21,28 @@ const STATUS_FILTER_OPTIONS = [
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; className: string }> = {
-    approved: { label: "สำเร็จ", className: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" },
-    pending: { label: "รอดำเนินการ", className: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" },
-    rejected: { label: "ปฏิเสธ", className: "bg-red-500/20 text-red-400 border border-red-500/30" },
+    approved: {
+      label: "สำเร็จ",
+      className:
+        "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
+    },
+    pending: {
+      label: "รอดำเนินการ",
+      className: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+    },
+    rejected: {
+      label: "ปฏิเสธ",
+      className: "bg-red-500/20 text-red-400 border border-red-500/30",
+    },
   };
-  const entry = map[status] ?? { label: status, className: "bg-surface text-muted border border-border" };
+  const entry = map[status] ?? {
+    label: status,
+    className: "bg-surface text-muted border border-border",
+  };
   return (
-    <span className={`text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${entry.className}`}>
+    <span
+      className={`text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap ${entry.className}`}
+    >
       {entry.label}
     </span>
   );
@@ -96,7 +111,14 @@ export default function WalletPage() {
             href="/topup"
             className="flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors whitespace-nowrap"
           >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            >
               <path d="M12 5v14M5 12h14" />
             </svg>
             เติมเหรียญ
@@ -104,7 +126,6 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* History card */}
       <div className="bg-surface border border-border rounded-2xl p-6">
         <div className="flex items-center justify-between mb-5">
           <p className="font-bold text-text">ประวัติเติมเหรียญ</p>
