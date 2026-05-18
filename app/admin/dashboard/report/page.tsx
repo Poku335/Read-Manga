@@ -63,12 +63,6 @@ const DEMO_REPORT: Omit<SiteReport, "id" | "createdAt" | "status"> = {
       suggestedFix: "เพิ่ม @keyframes swiper-progress { from { width: 100%; } to { width: 0; } } ใน globals.css",
     },
     {
-      id: "f3", severity: "critical", title: "Writer Dashboard ใช้สีผิด theme",
-      file: "app/writer/comics/page.tsx",
-      description: "ใช้ hardcoded text-gray-* และ bg-white ทั้งหน้า แทนที่จะใช้ CSS variables ของ design system",
-      suggestedFix: "แทนที่ text-gray-800 → text-text, bg-white → bg-surface, border-gray-200 → border-border",
-    },
-    {
       id: "f4", severity: "critical", title: "TopUp Page ขาด 'use client'",
       file: "app/topup/page.tsx", line: 1,
       description: "Page ใช้ useSession() และ useState แต่ไม่มี 'use client' directive",
@@ -84,12 +78,6 @@ const DEMO_REPORT: Omit<SiteReport, "id" | "createdAt" | "status"> = {
       id: "f6", severity: "major", title: "ไม่มี loading.tsx สำหรับหลายหน้า",
       description: "หน้า bookmarks, reading-history, settings, refer, topup ไม่มี loading skeleton",
       suggestedFix: "สร้าง loading.tsx ใน app/bookmarks/, app/reading-history/, app/settings/, app/refer/, app/topup/",
-    },
-    {
-      id: "f7", severity: "major", title: "Writer Comics Create Page ไม่มีไฟล์",
-      file: "app/writer/comics/create/page.tsx",
-      description: "Route /writer/comics/create ถูก link มาจาก navbar แต่ไม่มีไฟล์ จะ 404",
-      suggestedFix: "สร้าง page.tsx พร้อม manga creation form",
     },
     {
       id: "f8", severity: "major", title: "ไม่มี Error UI เมื่อ API ล้มเหลว",

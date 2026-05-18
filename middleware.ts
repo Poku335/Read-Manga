@@ -13,15 +13,9 @@ export default auth((req) => {
     }
   }
 
-  if (pathname.startsWith("/writer")) {
-    if (!req.auth || (req.auth.user as { role?: string })?.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/auth/signin?callbackUrl=/writer/comics", req.url));
-    }
-  }
-
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/writer/:path*"],
+  matcher: ["/admin/:path*"],
 };
