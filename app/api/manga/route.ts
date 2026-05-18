@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
 
@@ -80,12 +79,8 @@ export async function POST(req: NextRequest) {
       }
 
       const ext = coverFile.name.split(".").pop() || "png";
-      const filename = `cover_${Date.now()}.${ext}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads");
-      await mkdir(uploadDir, { recursive: true });
-      const buffer = Buffer.from(await coverFile.arrayBuffer());
-      await writeFile(path.join(uploadDir, filename), buffer);
-      coverImage = `/uploads/${filename}`;
+      const blob = await put(`covers/cover_${Date.now()}.${ext}`, coverFile, { access: "public" });
+      coverImage = blob.url;
     }
 
     const authorDbId = parseInt(user.id);

@@ -1,8 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -30,13 +29,9 @@ export async function POST(req: NextRequest) {
   }
 
   const ext = image.name.split(".").pop() || "jpg";
-  const filename = `${mangaId}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads", "hero");
-  await mkdir(uploadDir, { recursive: true });
-  const buffer = Buffer.from(await image.arrayBuffer());
-  await writeFile(path.join(uploadDir, filename), buffer);
+  const blob = await put(`hero/${mangaId}_${Date.now()}.${ext}`, image, { access: "public" });
 
-  const url = `/uploads/hero/${filename}`;
+  const url = blob.url;
   const key = `hero_image_${mangaId}`;
   await prisma.siteConfig.upsert({
     where: { key },

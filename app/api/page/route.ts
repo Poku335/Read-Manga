@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { put } from "@vercel/blob";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
 
@@ -58,12 +57,8 @@ export async function POST(req: NextRequest) {
     }
 
     const ext = file.name.split(".").pop() || "png";
-    const filename = `ch${chapterId}_p${pageNumber}_${Date.now()}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(uploadDir, filename), buffer);
-    const imagePath = `/uploads/${filename}`;
+    const blob = await put(`pages/ch${chapterId}_p${pageNumber}_${Date.now()}.${ext}`, file, { access: "public" });
+    const imagePath = blob.url;
 
     const page = await prisma.page.upsert({
       where: { chapterId_pageNumber: { chapterId, pageNumber } },
