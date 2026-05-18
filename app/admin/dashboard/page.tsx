@@ -104,7 +104,7 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       setUpdateRoleModal(null);
-      loadAll("users");
+      loadAll();
       toast("เปลี่ยน role สำเร็จ", "success");
     } else {
       toast("เกิดข้อผิดพลาด ไม่สามารถเปลี่ยน role ได้", "error");
@@ -122,7 +122,7 @@ export default function AdminDashboard() {
     if (res.ok) {
       setCoinsModal(null);
       setCoinsAmount("");
-      loadAll("users");
+      loadAll();
       toast("อัปเดต coins สำเร็จ", "success");
     } else {
       toast("เกิดข้อผิดพลาด ไม่สามารถอัปเดต coins ได้", "error");
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
     });
     if (res.ok) {
       setEditModal(null);
-      loadAll("manga");
+      loadAll();
       toast("บันทึกการ์ตูนสำเร็จ", "success");
     } else {
       toast("บันทึกไม่สำเร็จ กรุณาลองใหม่", "error");
@@ -226,7 +226,7 @@ export default function AdminDashboard() {
           <p className="text-red-400 font-semibold mb-1">ไม่สามารถโหลดข้อมูลได้</p>
           <p className="text-red-400/70 text-sm mb-4">{fetchError}</p>
           <button
-            onClick={() => loadAll(tab)}
+            onClick={() => loadAll()}
             className="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-accent-hover transition-colors"
           >
             ลองใหม่
