@@ -318,13 +318,11 @@ export default async function HomePage({
     if (!isNaN(id)) heroImageMap[id] = c.value;
   }
 
-  const heroMangas = heroSourceIds
-    .map((id) => {
-      const m = heroRaw.find((m) => m.id === id);
-      if (!m) return undefined;
-      return { ...m, heroImage: heroImageMap[id] ?? null };
-    })
-    .filter(Boolean);
+  const heroMangas = heroSourceIds.flatMap((id) => {
+    const m = heroRaw.find((mm) => mm.id === id);
+    if (!m) return [];
+    return [{ ...m, heroImage: heroImageMap[id] ?? null }];
+  });
 
   if (totalCount === 0) {
     return (

@@ -66,7 +66,7 @@ export default function AdminDashboard() {
   const user = session?.user as (NonNullable<typeof session>["user"] & SessionUser) | undefined;
   const isAdmin = status === "authenticated" && user?.role === "ADMIN";
 
-  const loadAll = useCallback(async () => {
+  const loadAll = useCallback(async (_tab?: Tab) => {
     setLoading(true);
     setFetchError(null);
     try {
