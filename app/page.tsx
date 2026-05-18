@@ -302,9 +302,6 @@ export default async function HomePage({
         <p className="text-5xl mb-4">📚</p>
         <p className="text-base font-medium text-text">ยังไม่มีมังงะในระบบ</p>
         <p className="text-sm mt-2">เริ่มเพิ่มมังงะเรื่องแรกได้เลย</p>
-        <Link href="/admin/comics/create" className="inline-block mt-4 bg-accent text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-accent-hover transition-colors">
-          สร้างการ์ตูนเรื่องแรก
-        </Link>
       </div>
     );
   }
