@@ -120,7 +120,7 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
       onClick={onCancel}
     >
       <div
-        className="bg-surface rounded-2xl shadow-2xl overflow-hidden w-full max-w-[780px] border border-border"
+        className="bg-surface rounded-2xl shadow-2xl overflow-hidden w-full max-w-[780px] border border-border flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -143,7 +143,7 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
         {/* Crop area */}
         <div
           ref={containerRef}
-          className="relative bg-gray-900 flex items-center justify-center overflow-hidden select-none touch-none"
+          className="relative bg-gray-900 flex items-center justify-center overflow-hidden select-none touch-none flex-1"
           style={{ minHeight: 200 }}
         >
           {/* Full image — fixed, not draggable */}
