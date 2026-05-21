@@ -68,15 +68,13 @@
 - **ระบบเหรียญ** — เติมเงินผ่าน PromptPay, ใช้เหรียญปลดล็อคบท
 - **Comment & Rating** — แสดงความคิดเห็นและให้คะแนนมังงะ
 - **Admin Dashboard** — จัดการมังงะ, ผู้ใช้, Topup, Hero Image, Log
-- **News** — ข่าวสารและประกาศ
 
 ## Tech Stack
 
 - [Next.js 15](https://nextjs.org/) (App Router)
 - TypeScript
 - Tailwind CSS
-- Prisma ORM + [Neon](https://neon.tech/) PostgreSQL
-- [Vercel Blob](https://vercel.com/storage/blob) (เก็บรูปภาพ)
+- Prisma ORM + PostgreSQL
 - NextAuth v5 (Email + Google OAuth)
 - PromptPay QR
 
