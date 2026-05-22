@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Image from "next/image";
 
 interface UploadedPage {
   name: string;
@@ -145,7 +144,8 @@ export default function UploadPagesPage() {
             {pages.map((p, i) => (
               <div key={p.name} className="relative group">
                 <div className="relative aspect-[3/4] rounded overflow-hidden bg-surface border border-border">
-                  <Image src={p.preview} alt={p.name} fill className="object-cover" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.preview} alt={p.name} className="absolute inset-0 w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
                     <button
                       onClick={() => moveUp(i)}
