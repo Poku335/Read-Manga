@@ -25,6 +25,8 @@ interface ChapterListProps {
   continueChapterId?: number | null;
 }
 
+const INITIAL_COUNT = 20;
+
 export default function ChapterList({
   chapters,
   mangaId,
@@ -36,9 +38,13 @@ export default function ChapterList({
 }: ChapterListProps) {
   const router = useRouter();
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const purchaseSet = new Set(purchases);
   const readSet = new Set(readChapterIds);
   void isAdmin;
+
+  const displayedChapters = showAll ? chapters : chapters.slice(0, INITIAL_COUNT);
+  const hiddenCount = chapters.length - INITIAL_COUNT;
 
   function handleChapterClick(chapter: Chapter) {
     if (!chapter.isPaid || purchaseSet.has(chapter.id)) return;
@@ -58,7 +64,7 @@ export default function ChapterList({
           </div>
         ) : (
           <div className="divide-y divide-border">
-            {chapters.map((chapter) => {
+            {displayedChapters.map((chapter) => {
               const isPurchased = purchaseSet.has(chapter.id);
               const canRead = !chapter.isPaid || isPurchased;
               const isCurrent = chapter.id === continueChapterId;
@@ -116,6 +122,14 @@ export default function ChapterList({
               );
             })}
           </div>
+        )}
+        {hiddenCount > 0 && (
+          <button
+            onClick={() => setShowAll((v) => !v)}
+            className="w-full py-3 text-sm text-muted hover:text-accent transition-colors border-t border-border"
+          >
+            {showAll ? "แสดงน้อยลง" : `ดูทั้งหมด ${chapters.length} ตอน (${hiddenCount} ตอนที่ซ่อนอยู่)`}
+          </button>
         )}
       </div>
 

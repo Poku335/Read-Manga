@@ -10,6 +10,7 @@ import ChapterList from "@/components/ChapterList";
 import BookmarkButton from "@/components/BookmarkButton";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import CommentSection from "@/components/CommentSection";
+import RatingWidget from "@/components/RatingWidget";
 import type { Metadata } from "next";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -204,13 +205,21 @@ export default async function MangaDetailPage({
               )}
             </div>
 
-            <h1 className="text-xl sm:text-3xl font-bold text-text leading-tight mb-2">
+            <h1 className="text-xl sm:text-3xl font-bold text-text leading-tight mb-1">
               {manga.title}
             </h1>
+
+            {manga.altTitle && (
+              <p className="text-sm text-muted mb-2">{manga.altTitle}</p>
+            )}
 
             {manga.description && (
               <ExpandableDescription description={manga.description} />
             )}
+
+            <div className="mb-3">
+              <RatingWidget mangaId={mangaId} isLoggedIn={!!user?.email} />
+            </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted mb-4">
               <span className="flex items-center gap-1.5">

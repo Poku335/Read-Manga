@@ -6,6 +6,7 @@ import ChapterPaywall from "@/components/ChapterPaywall";
 import ChapterNavigator from "@/components/ChapterNavigator";
 import ReaderHeader from "@/components/ReaderHeader";
 import PageImage from "@/components/PageImage";
+import ChapterEndBanner from "@/components/ChapterEndBanner";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
 import type { Metadata } from "next";
@@ -158,27 +159,33 @@ export default async function ChapterReaderPage({
 
             {chapter.pages.length === 0 ? (
               <div className="mx-auto max-w-sm border border-border bg-bg px-6 py-7 text-center rounded-lg">
-                <p className="text-base font-bold text-text">
-                  ยังไม่มีหน้าการ์ตูนสำหรับตอนนี้
-                </p>
+                <p className="text-base font-bold text-text">ยังไม่มีการ์ตูน</p>
                 <Link
                   href={`/manga/${mangaId}/chapter/${chapId}/upload`}
                   className="mt-4 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-white hover:bg-accent-hover transition-colors"
                 >
-                  อัปโหลดหน้าการ์ตูน
+                  อัปโหลManga
                 </Link>
               </div>
             ) : (
-              <div className="mx-auto flex max-w-[760px] flex-col items-center">
-                {chapter.pages.map((page) => (
-                  <PageImage
-                    key={page.id}
-                    src={page.imagePath}
-                    pageNumber={page.pageNumber}
-                    priority={page.pageNumber <= 3}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="mx-auto flex max-w-[760px] flex-col items-center">
+                  {chapter.pages.map((page) => (
+                    <PageImage
+                      key={page.id}
+                      src={page.imagePath}
+                      pageNumber={page.pageNumber}
+                      priority={page.pageNumber <= 3}
+                    />
+                  ))}
+                </div>
+
+                <ChapterEndBanner
+                  mangaId={mangaId}
+                  chapterNumber={chapter.chapterNumber}
+                  nextChapter={nextChapter}
+                />
+              </>
             )}
           </div>
 

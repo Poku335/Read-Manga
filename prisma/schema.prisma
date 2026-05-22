@@ -95,6 +95,9 @@ model Manga {
   ratings     Rating[]
 
   @@index([viewCount])
+  @@index([createdAt])
+  @@index([genre])
+  @@index([status])
 }
 
 model Chapter {
@@ -193,6 +196,7 @@ model Rating {
   manga     Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
 
   @@unique([userId, mangaId])
+  @@index([mangaId])
 }
 
 model SiteReport {

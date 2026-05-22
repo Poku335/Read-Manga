@@ -3,6 +3,15 @@
 import { useState } from "react";
 import Image from "next/image";
 
+function toBase64(str: string): string {
+  if (typeof window === "undefined") return Buffer.from(str).toString("base64");
+  return window.btoa(str);
+}
+
+const BLUR_DATA_URL = `data:image/svg+xml;base64,${toBase64(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="9" height="13"><rect width="9" height="13" fill="#1c1c20"/></svg>'
+)}`;
+
 interface PageImageProps {
   src: string;
   pageNumber: number;
@@ -57,6 +66,8 @@ export default function PageImage({ src, pageNumber, priority }: PageImageProps)
       priority={priority}
       loading={priority ? "eager" : "lazy"}
       sizes="(max-width: 768px) 100vw, 900px"
+      placeholder="blur"
+      blurDataURL={BLUR_DATA_URL}
       onError={handleError}
     />
   );
