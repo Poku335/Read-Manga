@@ -6,7 +6,6 @@ import ChapterPaywall from "@/components/ChapterPaywall";
 import ChapterNavigator from "@/components/ChapterNavigator";
 import ReaderHeader from "@/components/ReaderHeader";
 import PageImage from "@/components/PageImage";
-import ChapterEndBanner from "@/components/ChapterEndBanner";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
 import type { Metadata } from "next";
@@ -180,11 +179,6 @@ export default async function ChapterReaderPage({
                   ))}
                 </div>
 
-                <ChapterEndBanner
-                  mangaId={mangaId}
-                  chapterNumber={chapter.chapterNumber}
-                  nextChapter={nextChapter}
-                />
               </>
             )}
           </div>
