@@ -30,10 +30,6 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
       .catch(() => setChapters([]));
   }, [mangaId]);
 
-  function openDropdown() {
-    setOpen((v) => !v);
-  }
-
   useEffect(() => {
     if (!open) return;
     setTimeout(() => activeRef.current?.scrollIntoView({ block: "nearest" }), 30);
@@ -48,7 +44,6 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
 
   return (
     <div className="grid grid-cols-3 items-center gap-3">
-      {/* Prev */}
       <div className="flex justify-start">
         {prevChapter ? (
           <button
@@ -70,11 +65,10 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
         )}
       </div>
 
-      {/* Chapter picker — opens upward */}
       <div className="flex justify-center">
         <div ref={containerRef} className="relative w-full max-w-[180px]">
           <button
-            onClick={openDropdown}
+            onClick={() => setOpen((v) => !v)}
             className="w-full flex items-center justify-between gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-xs font-semibold text-text hover:border-accent/40 transition-colors outline-none"
           >
             <span className="truncate">ตอนที่ {chapterNumber}</span>
@@ -117,7 +111,6 @@ export default function ChapterNavigator({ mangaId, chapterNumber, currentChapte
         </div>
       </div>
 
-      {/* Next */}
       <div className="flex justify-end">
         {nextChapter ? (
           <button

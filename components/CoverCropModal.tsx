@@ -123,7 +123,6 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
         className="bg-surface rounded-2xl shadow-2xl overflow-hidden w-full max-w-[780px] border border-border flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div>
             <p className="text-sm font-bold text-text">เลือกพื้นที่รูปปก</p>
@@ -140,13 +139,11 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
           </button>
         </div>
 
-        {/* Crop area */}
         <div
           ref={containerRef}
           className="relative bg-gray-900 flex items-center justify-center overflow-hidden select-none touch-none flex-1"
           style={{ minHeight: 200 }}
         >
-          {/* Full image — fixed, not draggable */}
           <img
             ref={imgRef}
             src={src}
@@ -169,7 +166,6 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
             </div>
           )}
 
-          {/* Draggable crop frame — outline creates dark overlay outside the box */}
           {loaded && (
             <div
               className="absolute cursor-grab active:cursor-grabbing"
@@ -188,7 +184,6 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
             >
-              {/* Corner L-marks */}
               <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-white -translate-x-px -translate-y-px" />
               <div className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2 border-white translate-x-px -translate-y-px" />
               <div className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2 border-white -translate-x-px translate-y-px" />
@@ -197,7 +192,6 @@ export default function CoverCropModal({ src, onConfirm, onCancel }: Props) {
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-border">
           <button
             type="button"

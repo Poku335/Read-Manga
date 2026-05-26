@@ -39,7 +39,6 @@ export default function ReaderHeader({
     }
   }
 
-  // Lock body scroll when modal open
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -50,7 +49,6 @@ export default function ReaderHeader({
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
@@ -61,7 +59,6 @@ export default function ReaderHeader({
   return (
     <>
       <div className="flex items-center justify-between border-b border-border bg-surface px-5 py-4">
-        {/* Left: hamburger + breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={openModal}
@@ -90,7 +87,6 @@ export default function ReaderHeader({
           </nav>
         </div>
 
-        {/* Right: prev/next */}
         <div className="flex items-center gap-3 text-muted flex-shrink-0">
           {prevChapterId ? (
             <Link href={`/manga/${mangaId}/chapter/${prevChapterId}`} className="hover:text-text transition-colors" aria-label="ตอนก่อนหน้า">
@@ -121,22 +117,18 @@ export default function ReaderHeader({
         </div>
       </div>
 
-      {/* Modal overlay */}
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           onClick={() => setOpen(false)}
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-          {/* Modal box */}
           <div
             className="relative z-10 w-full max-w-sm rounded-2xl border border-border bg-surface shadow-2xl shadow-black/60 flex flex-col"
             style={{ maxHeight: "70vh" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
               <div>
                 <p className="text-sm font-bold text-text">รายการตอน</p>
@@ -153,7 +145,6 @@ export default function ReaderHeader({
               </button>
             </div>
 
-            {/* Chapter list */}
             <ul className="overflow-y-auto flex-1 py-2">
               {chapters === null ? (
                 <li className="flex items-center justify-center py-10 text-sm text-muted">กำลังโหลด...</li>

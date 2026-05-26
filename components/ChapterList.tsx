@@ -27,13 +27,19 @@ interface ChapterListProps {
 
 const INITIAL_COUNT = 20;
 
+function formatChapterDate(date: Date): string {
+  const d = new Date(date);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}/${d.getFullYear()}`;
+}
+
 export default function ChapterList({
   chapters,
   mangaId,
   purchases,
   readChapterIds = [],
   userCoins,
-  isAdmin,
   continueChapterId,
 }: ChapterListProps) {
   const router = useRouter();
@@ -41,7 +47,6 @@ export default function ChapterList({
   const [showAll, setShowAll] = useState(false);
   const purchaseSet = new Set(purchases);
   const readSet = new Set(readChapterIds);
-  void isAdmin;
 
   const displayedChapters = showAll ? chapters : chapters.slice(0, INITIAL_COUNT);
   const hiddenCount = chapters.length - INITIAL_COUNT;
@@ -111,12 +116,7 @@ export default function ChapterList({
                   )}
 
                   <span className="hidden sm:block text-xs text-muted flex-shrink-0 ml-4">
-                    {(() => {
-                      const d = new Date(chapter.createdAt);
-                      const dd = String(d.getDate()).padStart(2, "0");
-                      const mm = String(d.getMonth() + 1).padStart(2, "0");
-                      return `${dd}/${mm}/${d.getFullYear()}`;
-                    })()}
+                    {formatChapterDate(chapter.createdAt)}
                   </span>
                 </div>
               );

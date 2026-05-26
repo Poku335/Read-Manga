@@ -70,7 +70,6 @@ export default function UserMenu({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="absolute top-full right-0 mt-2 bg-surface border border-border rounded-xl shadow-2xl z-50 w-64 overflow-hidden">
-      {/* User header */}
       <div className="px-4 py-3 bg-card border-b border-border">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-accent/30 flex-shrink-0">
@@ -102,7 +101,6 @@ export default function UserMenu({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      {/* Menu items */}
       <div className="py-1">
         {MENU_ITEMS.map((item) => (
           <Link

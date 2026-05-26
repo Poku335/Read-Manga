@@ -103,7 +103,6 @@ export default function RankingSection({
 
   return (
     <div className="bg-surface border border-border rounded-xl overflow-hidden flex flex-col max-h-[780px]">
-      {/* Header */}
       <div className="px-4 pt-4 pb-0 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-1 h-5 bg-accent rounded-full flex-shrink-0" />
@@ -128,7 +127,6 @@ export default function RankingSection({
         </div>
       </div>
 
-      {/* Scrollable list */}
       <div className="overflow-y-auto flex-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-track]:bg-transparent">
         <RankList items={current.data} />
       </div>

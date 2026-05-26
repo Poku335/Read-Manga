@@ -104,7 +104,6 @@ export default function AddChapterModal({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className="text-gray-600">
@@ -120,7 +119,6 @@ export default function AddChapterModal({
         </div>
 
         <div className="px-5 py-4 space-y-4">
-          {/* Prev chapter info */}
           <div className="bg-purple-50 border border-purple-100 rounded-lg px-4 py-2.5 flex items-center justify-between text-sm">
             <span className="text-gray-600">
               ตอนก่อนหน้า:{" "}
@@ -133,7 +131,6 @@ export default function AddChapterModal({
             </span>
           </div>
 
-          {/* Chapter title */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-sm font-medium text-gray-700">
@@ -149,7 +146,6 @@ export default function AddChapterModal({
             />
           </div>
 
-          {/* Content upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
               เนื้อหา<span className="text-red-500 ml-0.5">*</span>
@@ -185,7 +181,6 @@ export default function AddChapterModal({
               </p>
             </div>
 
-            {/* Page previews */}
             {pages.length > 0 && (
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-2">
@@ -213,7 +208,6 @@ export default function AddChapterModal({
               </div>
             )}
 
-            {/* Upload progress */}
             {uploading && (
               <div className="mt-3">
                 <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -227,7 +221,6 @@ export default function AddChapterModal({
             )}
           </div>
 
-          {/* Reader message */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-sm font-medium text-gray-700">ข้อความถึงนักอ่าน</label>
@@ -242,11 +235,9 @@ export default function AddChapterModal({
             />
           </div>
 
-          {/* Episode settings */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">ตั้งค่าตอน</label>
             <div className="grid grid-cols-2 gap-6">
-              {/* Pricing */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -285,7 +276,6 @@ export default function AddChapterModal({
                 )}
               </div>
 
-              {/* Publish */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -321,7 +311,6 @@ export default function AddChapterModal({
             </div>
           </div>
 
-          {/* Disclaimer */}
           <p className="text-[11px] text-red-500 text-center">
             *การกดยกเลิกหรือปิดหน้าต่างจะล้างข้อมูลในแบบฟอร์มนี้ทันที
           </p>
@@ -333,7 +322,6 @@ export default function AddChapterModal({
           )}
         </div>
 
-        {/* Footer buttons */}
         <div className="flex gap-3 px-5 pb-5 pt-2">
           <button
             onClick={onClose}

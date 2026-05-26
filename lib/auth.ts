@@ -77,15 +77,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         meta: { provider: account?.provider ?? "credentials" },
       });
     },
-    async signOut() {
-      // token/session cleared — no user reference available in NextAuth 5 signOut event
-    },
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // For OAuth providers, user.role may not be populated — fetch from DB to ensure accuracy
+        // OAuth providers may not populate user.role — fetch from DB to ensure accuracy
         if (!user.role && user.email) {
           const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
           if (dbUser) {

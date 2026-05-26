@@ -107,7 +107,6 @@ export default function Navbar() {
 
   return (
     <nav className="bg-surface/95 backdrop-blur-md border-b border-border sticky top-0 z-50 relative">
-      {/* Search overlay */}
       {searchOpen && (
         <div className="absolute inset-0 bg-surface backdrop-blur flex items-center px-4 z-10">
           <form
@@ -125,7 +124,7 @@ export default function Navbar() {
                 }
               }}
               placeholder="ค้นหามังงะ การ์ตูน..."
-              className="flex-1 bg-bg border border-border rounded-full px-4 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors transition-colors"
+              className="flex-1 bg-bg border border-border rounded-full px-4 py-2 text-sm text-text placeholder:text-muted outline-none focus:border-white/40 transition-colors"
             />
             <button
               type="submit"
@@ -161,7 +160,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Main bar */}
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 flex-shrink-0 group">
           <svg
@@ -241,7 +239,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Right side */}
         <div className="flex items-center gap-1 ml-auto">
           <button
             onClick={() => setSearchOpen(true)}
@@ -334,7 +331,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile hamburger */}
           <button
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
             className="md:hidden text-text/60 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors ml-1"
@@ -376,7 +372,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile nav dropdown */}
       {mobileNavOpen && (
         <div className="md:hidden border-t border-border bg-surface/98 px-4 py-3 space-y-1">
           <div className="px-3 py-2 text-xs uppercase tracking-[0.25em] text-muted">

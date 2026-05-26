@@ -2,8 +2,6 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-// ---- Types ----
-
 export type ToastVariant = "success" | "error" | "info";
 
 interface ToastItem {
@@ -16,11 +14,7 @@ interface ToastContextValue {
   addToast: (message: string, variant?: ToastVariant) => void;
 }
 
-// ---- Context ----
-
 const ToastContext = createContext<ToastContextValue | null>(null);
-
-// ---- Hook (also exported from lib/useToast.ts for convenience) ----
 
 export function useToast() {
   const ctx = useContext(ToastContext);
@@ -36,8 +30,6 @@ export function useToast() {
   return { toast };
 }
 
-// ---- Variant styles ----
-
 const VARIANT_STYLES: Record<ToastVariant, string> = {
   success: "bg-green-500/15 border-green-500/30 text-green-400",
   error:   "bg-red-500/15 border-red-500/30 text-red-400",
@@ -50,8 +42,6 @@ const VARIANT_ICON: Record<ToastVariant, string> = {
   info:    "i",
 };
 
-// ---- Single Toast Card ----
-
 interface ToastCardProps {
   item: ToastItem;
   onRemove: (id: number) => void;
@@ -60,13 +50,11 @@ interface ToastCardProps {
 function ToastCard({ item, onRemove }: ToastCardProps) {
   const [visible, setVisible] = useState(false);
 
-  // Trigger slide-in on mount
   useEffect(() => {
     const frame = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Auto-dismiss: slide out at 3s, unmount at 3.35s
   useEffect(() => {
     const slideOut = setTimeout(() => setVisible(false), 3000);
     const unmount  = setTimeout(() => onRemove(item.id), 3350);
@@ -93,14 +81,12 @@ function ToastCard({ item, onRemove }: ToastCardProps) {
         VARIANT_STYLES[item.variant],
       ].join(" ")}
     >
-      {/* Icon badge */}
       <span className="flex-shrink-0 w-5 h-5 rounded-full border border-current flex items-center justify-center text-[11px] font-bold mt-0.5">
         {VARIANT_ICON[item.variant]}
       </span>
 
       <p className="text-sm font-medium leading-snug flex-1">{item.message}</p>
 
-      {/* Close button */}
       <button
         onClick={dismiss}
         className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity text-current"
@@ -113,8 +99,6 @@ function ToastCard({ item, onRemove }: ToastCardProps) {
     </div>
   );
 }
-
-// ---- Provider ----
 
 let _nextId = 1;
 
@@ -133,7 +117,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ addToast }}>
       {children}
-      {/* Fixed bottom-right container; pointer-events-none so it never blocks clicks */}
       <div
         aria-label="Notifications"
         className="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2 items-end pointer-events-none"

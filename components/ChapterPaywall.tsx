@@ -47,7 +47,6 @@ export default function ChapterPaywall({ chapter, mangaId, mangaTitle, mangaCove
 
   return (
     <div className="min-h-screen bg-bg text-text flex flex-col">
-      {/* Top bar */}
       <div className="sticky top-14 z-40 bg-surface/95 backdrop-blur border-b border-border">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4 text-sm text-muted">
           <Link href="/" className="hover:text-accent transition-colors">หน้าแรก</Link>
@@ -60,7 +59,6 @@ export default function ChapterPaywall({ chapter, mangaId, mangaTitle, mangaCove
         </div>
       </div>
 
-      {/* Paywall card */}
       <div className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="max-w-sm w-full page-enter">
           <div className="bg-surface border border-border rounded-2xl p-8 shadow-2xl text-center">
@@ -78,7 +76,6 @@ export default function ChapterPaywall({ chapter, mangaId, mangaTitle, mangaCove
               ตอนที่ {chapter.chapterNumber}{chapter.title ? ` — ${chapter.title}` : ""}
             </p>
 
-            {/* Price summary */}
             <div className="bg-bg border border-border rounded-xl p-4 mb-5 space-y-2.5 text-left">
               <div className="flex justify-between items-center">
                 <span className="text-muted text-sm">ราคา</span>

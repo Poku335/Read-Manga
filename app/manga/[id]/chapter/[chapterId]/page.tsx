@@ -51,7 +51,6 @@ export default async function ChapterReaderPage({
   const chapId = parseInt(chapterId);
   if (isNaN(mangaId) || isNaN(chapId)) notFound();
 
-  // Parallel: chapter fetch + auth
   const [chapter, session] = await Promise.all([
     prisma.chapter.findUnique({
       where: { id: chapId },
@@ -123,7 +122,6 @@ export default async function ChapterReaderPage({
 
   return (
     <div className="-mx-4 -my-6 min-h-screen bg-bg pb-12 text-muted sm:-mx-6 sm:-my-8 lg:-mx-8">
-      {/* Prefetch next chapter */}
       {nextChapter && (
         <link
           rel="prefetch"
@@ -142,7 +140,6 @@ export default async function ChapterReaderPage({
             nextChapterId={nextChapter?.id ?? null}
           />
 
-          {/* Reader content */}
           <div
             id="reader-content"
             className="border-b border-border px-3 py-16 sm:px-8"
@@ -178,12 +175,10 @@ export default async function ChapterReaderPage({
                     />
                   ))}
                 </div>
-
               </>
             )}
           </div>
 
-          {/* Prev / Next chapter */}
           <section className="px-6 py-8 sm:px-16">
             <ChapterNavigator
               mangaId={mangaId}

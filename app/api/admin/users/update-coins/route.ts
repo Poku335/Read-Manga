@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { userId, amount } = body;
 
-    // Fix #10: explicit type check before numeric validation — a non-numeric string passes `== null`
     if (!userId || typeof amount !== "number") {
       return NextResponse.json({ error: "userId and a numeric amount are required" }, { status: 400 });
     }
@@ -26,7 +25,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "amount must be an integer between -999999 and 999999" }, { status: 400 });
     }
 
-    // Fix #5: fetch current balance and reject if resulting balance would go negative
     const target = await prisma.user.findUnique({ where: { id: userId }, select: { coins: true } });
     if (!target) return NextResponse.json({ error: "User not found" }, { status: 404 });
 

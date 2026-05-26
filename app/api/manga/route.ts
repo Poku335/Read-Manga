@@ -28,12 +28,10 @@ export async function POST(req: NextRequest) {
     const session = await auth();
     const user = getSessionUser(session);
 
-    // Require authenticated session — fix: was using unsafe `session?.user as {...}` cast
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const form = await req.formData();
 
-    // Safe extraction: use typeof checks instead of bare `as string` casts
     const titleEntry = form.get("title");
     const title = typeof titleEntry === "string" ? titleEntry : "";
     const altTitleEntry = form.get("altTitle");
@@ -64,7 +62,6 @@ export async function POST(req: NextRequest) {
 
     let coverImage: string | null = null;
     if (coverFile instanceof File && coverFile.size > 0) {
-      // Validate cover image MIME type and size — fix: was missing file validation
       if (!ALLOWED_COVER_MIME_TYPES.includes(coverFile.type)) {
         return NextResponse.json(
           { error: "Unsupported file type. Cover image must be JPEG, PNG, WebP, or GIF." },

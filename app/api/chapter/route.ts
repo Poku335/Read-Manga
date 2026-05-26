@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { getSessionUser } from "@/lib/session";
-import next from "next";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +13,6 @@ export async function POST(req: NextRequest) {
     const { mangaId, chapterNumber, title, isPaid, price, isHidden } = body;
 
     if (!mangaId || chapterNumber == null) {
-      
       return NextResponse.json({ error: "mangaId and chapterNumber are required" }, { status: 400 });
     }
 

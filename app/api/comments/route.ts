@@ -14,7 +14,6 @@ export async function GET(req: NextRequest) {
   const skip = (page - 1) * limit;
 
   const [comments, total] = await prisma.$transaction([
-    // Fetch only top-level comments (parentId is null)
     prisma.comment.findMany({
       where: { mangaId, parentId: null },
       orderBy: { createdAt: "desc" },
@@ -30,7 +29,6 @@ export async function GET(req: NextRequest) {
         },
       },
     }),
-    // Count only top-level comments for pagination
     prisma.comment.count({ where: { mangaId, parentId: null } }),
   ]);
 
@@ -93,7 +91,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Manga not found" }, { status: 404 });
   }
 
-  // Validate parentId if provided
   let resolvedParentId: number | null = null;
   if (parentId != null) {
     const parent = await prisma.comment.findUnique({ where: { id: parseInt(parentId) } });

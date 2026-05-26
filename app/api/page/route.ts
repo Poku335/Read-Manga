@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
 
     const form = await req.formData();
 
-    // Type-safe extraction with guards instead of unsafe casts
     const fileEntry = form.get("file");
     const chapterIdEntry = form.get("chapterId");
     const pageNumberEntry = form.get("pageNumber");
@@ -35,12 +34,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "chapterId and pageNumber must be valid numbers" }, { status: 400 });
     }
 
-    // Validate MIME type
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       return NextResponse.json({ error: "Unsupported media type. Only JPEG, PNG, WebP, and GIF are allowed." }, { status: 415 });
     }
 
-    // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json({ error: "File too large. Maximum size is 10 MB." }, { status: 413 });
     }

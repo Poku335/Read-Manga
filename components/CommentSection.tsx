@@ -3,9 +3,6 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-// ---------------------------------------------------------------------------
-// Guest identity helpers
-// ---------------------------------------------------------------------------
 const THAI_NAMES = [
   { name: "สมศักดิ์", slug: "somsak" },
   { name: "สมหมาย", slug: "sommai" },
@@ -31,9 +28,6 @@ function generateGuestIdentity(): { name: string; email: string } {
   return { name: pick.name, email: `${pick.slug}${num}@mangbo.com` };
 }
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 interface CommentUser {
   id: number;
   name: string;
@@ -57,9 +51,6 @@ interface Props {
   initialComments: Comment[];
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 function formatThaiDate(iso: string): string {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
@@ -77,9 +68,6 @@ function getAvatarLetter(c: Comment): string {
   return (getDisplayName(c)[0] ?? "U").toUpperCase();
 }
 
-// ---------------------------------------------------------------------------
-// Avatar sub-component
-// ---------------------------------------------------------------------------
 function Avatar({ comment, size = 8 }: { comment: Comment; size?: number }) {
   const sizeClass = size === 6 ? "w-6 h-6 text-xs" : "w-8 h-8 text-sm";
   return (
@@ -101,9 +89,6 @@ function Avatar({ comment, size = 8 }: { comment: Comment; size?: number }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 export default function CommentSection({
   mangaId,
   currentUserId,
@@ -116,12 +101,10 @@ export default function CommentSection({
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Reply state — tracks which comment id has the reply box open
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [replySubmitting, setReplySubmitting] = useState(false);
 
-  // Guest identity — generated once per session, stored in sessionStorage
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -224,7 +207,6 @@ export default function CommentSection({
 
   return (
     <div className="mt-10 space-y-3">
-      {/* Toast notification */}
       <div
         className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 ${showToast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}`}
       >
@@ -249,7 +231,6 @@ export default function CommentSection({
           </span>
         </div>
       </div>
-      {/* Comment input card */}
       <div className="bg-surface border border-border rounded-xl overflow-hidden">
         <div className="px-5 pt-5 pb-2">
           <h3 className="text-base font-bold text-text">
@@ -258,7 +239,6 @@ export default function CommentSection({
         </div>
 
         <form onSubmit={handleSubmit} className="px-5 pb-5 space-y-4">
-          {/* Textarea */}
           <div className="space-y-1">
             <label className="text-sm text-text font-medium">
               ความเห็น <span className="text-accent">*</span>
@@ -273,7 +253,6 @@ export default function CommentSection({
             />
           </div>
 
-          {/* Name + Email side by side (guest only) */}
           {!isLoggedIn && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
@@ -310,7 +289,6 @@ export default function CommentSection({
         </form>
       </div>
 
-      {/* Each comment — own card with subtle white border */}
       {comments.length > 0 && (
         <div className="space-y-2">
           {comments.map((c) => (
@@ -376,7 +354,6 @@ export default function CommentSection({
                 </div>
               </div>
 
-              {/* Replies */}
               {c.replies.length > 0 && (
                 <div className="ml-11 mt-3 space-y-3 border-l-2 border-border pl-4">
                   {c.replies.map((r) => (
@@ -428,7 +405,6 @@ export default function CommentSection({
                 </div>
               )}
 
-              {/* Inline reply form */}
               {replyingTo === c.id && (
                 <div className="ml-10 mt-3 border-l-2 border-accent/40 pl-3">
                   <div className="bg-bg border border-border rounded-lg p-3 space-y-2">

@@ -157,7 +157,6 @@ export default async function MangaDetailPage({
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Hero */}
       <div className="relative mb-6">
         {manga.coverImage && (
           <div className="absolute inset-0 -mx-4 -mt-6 h-48 overflow-hidden">
@@ -307,7 +306,6 @@ export default async function MangaDetailPage({
         </div>
       </div>
 
-      {/* Chapter list */}
       <div className="bg-surface border border-border rounded-xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <div className="flex items-center gap-2">

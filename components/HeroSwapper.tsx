@@ -64,7 +64,6 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
 
   return (
     <section className="relative w-full rounded-lg overflow-hidden min-h-[360px] sm:min-h-[430px] flex items-end border border-border bg-card">
-      {/* Background blur image */}
       <div
         className="absolute inset-0 transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
@@ -77,7 +76,6 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
       </div>
 
-      {/* Dot indicators */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5">
         {mangas.map((_, i) => (
           <button
@@ -93,7 +91,6 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         ))}
       </div>
 
-      {/* Rank badge */}
       <div
         className="absolute top-4 left-4 z-20 transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
@@ -103,7 +100,6 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         </span>
       </div>
 
-      {/* Content */}
       <div
         className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 p-5 sm:p-8 items-start sm:items-end w-full max-w-5xl transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
@@ -148,7 +144,6 @@ export default function HeroSwapper({ mangas }: { mangas: HeroManga[] }) {
         </div>
       </div>
 
-      {/* Nav arrows */}
       <button
         onClick={() => { const i = (current - 1 + mangas.length) % mangas.length; goTo(i); resetTimer(i); }}
         className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition-colors"

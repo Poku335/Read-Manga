@@ -71,10 +71,6 @@ const HERO_INCLUDE = {
   chapters: { orderBy: { chapterNumber: "asc" as const }, take: 1, select: { id: true, chapterNumber: true } },
 } as const;
 
-// Cast helper: Prisma's inferred type from MANGA_INCLUDE does not carry description
-// because MANGA_INCLUDE uses `include` (not `select`), so all scalar fields are included automatically.
-// The cast to MangaWithMeta[] is valid.
-
 export default async function HomePage({
   searchParams,
 }: {
@@ -172,7 +168,6 @@ export default async function HomePage({
           </div>
         )}
 
-        {/* Pagination */}
         {filteredManga.length > 0 && (
           <div className="flex items-center justify-between mt-8 gap-4">
             {offset > 0 ? (
@@ -197,8 +192,7 @@ export default async function HomePage({
     );
   }
 
-  // Home page: run all queries in parallel
-  const session = await auth();
+    const session = await auth();
   const userId = session?.user?.id ? Number(session.user.id) : null;
 
   const now = new Date();
@@ -260,13 +254,11 @@ export default async function HomePage({
     );
   }
 
-
   return (
     <div className="space-y-10 sm:space-y-12">
       {heroMangas.length > 0 && <HeroSwapper mangas={heroMangas} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-8 lg:gap-10 items-start">
-        {/* Left column: popular + latest stacked (same column width = same card size) */}
         <div className="space-y-10">
           {popularManga.length > 0 && (
             <section>
@@ -291,7 +283,6 @@ export default async function HomePage({
           )}
         </div>
 
-        {/* Right column: ranking — stretches to full height of left column */}
         {(weeklyRanking.length > 0 || monthlyRanking.length > 0 || allTimeRanking.length > 0) && (
           <aside className="lg:sticky lg:top-4">
             <RankingSection
